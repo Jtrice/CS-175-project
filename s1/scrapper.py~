@@ -29,7 +29,7 @@ def scrape(starttime=None, endtime=None, delay=60*2, user_agent="example"):
         exclude_top_25 = exclude_top_25 + post_ids
         print("Found {}/25 new posts in all/hot".format(len(post_ids)))
         logfile.write("all/hot {} / 25 \n".format(len(post_ids)))
-
+	
         post_ids = rget.get_new("all",tab="rising",num_posts=10,
                                 exclude_ids=[],user_agent=user_agent,
                                 out_file="Rising10.txt",stop_if_exclude=False,
@@ -40,5 +40,5 @@ def scrape(starttime=None, endtime=None, delay=60*2, user_agent="example"):
 
 if __name__ == "__main__":
     user_agent="testing praw script for finding hot posts""by Taylor Rogers"
-    scrape(starttime=1423296000,endtime=1423468800)
-
+    #scrape(starttime=1423296000,endtime=1423468800)
+    scrape()
