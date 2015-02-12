@@ -43,7 +43,6 @@ def scrape(starttime=None, endtime=None, delay=60*2, user_agent="example"):
 if __name__ == "__main__":
     user_agent="testing praw script for finding hot posts""by Taylor Rogers"
     #Feb 11
-    midnight_epoch = 1423699200
+    midnight_epoch = 1423814400
     scrape(starttime=midnight_epoch)
-    scrape()
 
