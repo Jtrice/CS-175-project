@@ -17,7 +17,7 @@ def get_new(subreddit,
 
     """Searches,loads,and writes out a # of reddit posts from subreddit/tab.
     Then it returns a list of all posts """
-    outfile = open(out_file,'a')
+    outfile = open(out_file,'a', encoding='utf-8')
     reddit = praw.Reddit(user_agent=user_agent)
     if subreddit == "front":
         gen = reddit.get_front_page(limit=num_posts)
