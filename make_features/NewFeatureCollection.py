@@ -1,4 +1,6 @@
 import ast
+from sklearn.feature_extraction.text import TfidfVectorizer
+from time import time
 
 class post:
 	#FrontPageID is a list of the front page ID's
@@ -8,6 +10,7 @@ class post:
 	#features all put into the private variable
 		self.id = data['id']
 		self.title = data['title']
+		self.title_weights = 0
 		self.num_comments = data['num_comments']
 		self.gilded = data['gilded']
 		self.upvotes = data['ups']
@@ -21,8 +24,16 @@ class post:
 		for i in range(len(FrontPageID)):
 			if (self.id == FrontPageID[i]):
 				self.front_page = True
+	def title_feature_score(self,score):
+		self.title_weights = score
+		
 
 
+
+				
+
+
+				
 def read_post(line):
     """Creates a dictionary from a string converted reddit post """
     line = line.replace("\\\\',","$b*$b*',") #I did this for one post.   
@@ -43,6 +54,12 @@ if __name__ == '__main__':
 	#this gets the front page id's and puts them into a list
 	FrontPageIDS = []
 	#frontPage = open("Data/top25.txt", "r", encoding="utf-8")
+	
+	t0 = time()
+	
+	
+	
+	
 	frontPage = open("top25.txt", "r", encoding="utf-8")
 	fline = frontPage.readline()
 	while fline:
@@ -51,7 +68,14 @@ if __name__ == '__main__':
 		FrontPageIDS.append(dictionary['id'])
 		fline = frontPage.readline()
 	print('Front Page done')
+	print("done in %0.3fs" % (time() - t0))
+	
+	
 	frontPage.close()
+	
+	t1 = time()
+	
+	
 	
 	#this makes a post object 
 	
@@ -59,11 +83,27 @@ if __name__ == '__main__':
 	f = open("NewCorpus.txt", "r", encoding="utf-8")
 	line = f.readline()
 	POSTS = []
+	Titles = [] #used to get title weights
+	
 	while line:
 		dictionary = read_post(line)
+		Titles.append(dictionary['title'])
+		
+		
 		#makes the post here and appends them into a list of posts
 		POSTS.append(post(dictionary,FrontPageIDS))
 		line = f.readline()
 		#print(dictionary['title'][:50])
-	print('done')
+	
+	print("done in %0.3fs" % (time() - t1))
+	
+	#getting weights for the titles
+	vectorizer = TfidfVectorizer(min_df=1)
+	Title_matrix = vectorizer.fit_transform(Titles)
+	
+	for i in range(len(POSTS)):
+		Score = float(sum(Title_matrix.sum(1)[i]))
+		POSTS[i].title_feature_score(Score)
+	print('full posts')
+	
 	f.close()
