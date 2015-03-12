@@ -18,9 +18,25 @@ def splitTestTrainingData(file, trainingPercentage):
     cutoff = int(len(postData)*trainingPercentage)
     return postData[1:cutoff], postData[cutoff:]
     
+def formatForBernoulli(file, trainingPercentage):
+    trainingData, testData = splitTestTrainingData(file, trainingPercentage)
+    formatTrainingData = []
+    formatTestData = []
+    frontPageSuccess = []
+    for i in trainingData:
+        formatTrainingData.append(i[1:-2])
+        frontPageSuccess.append(i[-2])
+    for i in testData:
+        formatTestData.append(i[1:-2])
+        
+    return formatTrainingData, formatTestData, frontPageSuccess
+    
+    
+        
+    
 if __name__ == "__main__":
-    fileName = "E:\\sample.csv"
-    trainingData, testData = splitTestTrainingData(fileName, .25)
+    fileName = "C:\\Users\\Jeremy\\Documents\\CS 175\\sample.csv"
+    trainingData, testData, frontPage = formatForBernoulli(fileName, .25)
     print("Size of training data is: " + str(len(trainingData)))    
     print(trainingData[0])
     print()
