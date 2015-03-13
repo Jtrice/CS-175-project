@@ -6,7 +6,7 @@ Created on Mon Mar  2 16:54:06 2015
 """
 
 from sklearn.naive_bayes import BernoulliNB
-import numpy as np
+#import numpy as np
 import splitTestTrainingData
 
 
@@ -24,13 +24,20 @@ if __name__ == "__main__":
     #x = np.random.randint(2, size=(6,100))
     #y = np.array([1,2,3,4,4,5])
     
-    fileName = "C:\\Users\\Jeremy\\Documents\\CS 175\\sample.csv"
-    trainingData, testData, frontPage = splitTestTrainingData.formatForBernoulli(fileName, .25)
+    fileName = "C:\\Users\\Jeremy\\Documents\\CS 175\\sample - Copy.csv"
+    trainingData, testData, frontPage, testFrontPage = splitTestTrainingData.formatForBernoulli(fileName, .25)
 
 
-    #prints the prediction from the classifier    
+    #gets the predictions from the classifier    
     #print(bernNBClassifier(x, y, x[2]))
-    print(bernNBClassifier(trainingData, frontPage, testData))
+    predictions = bernNBClassifier(trainingData, frontPage, testData)
+    
+    #tracks how many correct answers the predictions get, needs weights added
+    correct = 0
+    for i in range(len(predictions)):
+        if(predictions[i] == testFrontPage[i]):
+            correct += 1
+    print(correct/(len(predictions)))
     
     
     #print(trainingData)
