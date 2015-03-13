@@ -1,6 +1,10 @@
 import ast
+import re
+import collections
+import csv
 from sklearn.feature_extraction.text import TfidfVectorizer
 from time import time
+from nltk.corpus import stopwords
 
 class post:
 	#FrontPageID is a list of the front page ID's
@@ -20,17 +24,18 @@ class post:
 		self.created = data['created']
 		self.batch_time = data['batch_time']
 		#front page status
-		self.front_page = False
+		self.front_page = 0
 		for i in range(len(FrontPageID)):
 			if (self.id == FrontPageID[i]):
-				self.front_page = True
+				self.front_page = 1
+					
 	def title_feature_score(self,score):
 		self.title_weights = score
 		
 
 
 
-				
+			###Features : Subreddits, content, bag of words from title, 	
 
 
 				
@@ -49,6 +54,9 @@ def read_post(line):
         if type(v) is str: v = v.replace('$q*',"'").replace('$b*','\\')
         dict[k] = v
     return dict
+
+
+
     
 if __name__ == '__main__':
 	#this gets the front page id's and puts them into a list
@@ -57,29 +65,48 @@ if __name__ == '__main__':
 	
 	t0 = time()
 	
-	
-	
-	
 	frontPage = open("top25.txt", "r", encoding="utf-8")
 	fline = frontPage.readline()
+	
+	FSUBREDDITS = []
+	FTOPWORDS = []
+	FrontPageDict = {}
 	while fline:
 		dictionary = read_post(fline)
 		#add the id's into a list of Id's
 		FrontPageIDS.append(dictionary['id'])
+		FSUBREDDITS.append(dictionary['subreddit'])
+		FTOPWORDS.append(dictionary['title'])
+		
+		
+		
 		fline = frontPage.readline()
+	frontPage.close()
 	print('Front Page done')
+	
 	print("done in %0.3fs" % (time() - t0))
 	
 	
-	frontPage.close()
+	
+	
+	FEATURES = collections.Counter(FSUBREDDITS).most_common(29)
+	
+	
+	FTOPWORDS = (" ").join(FTOPWORDS)
+	FALL = re.findall(r'\w+', FTOPWORDS)
+	filtered_words = []
+	stops = stopwords.words('english')
+	
+	for w in FALL:
+		if w.lower() not in stops:
+			filtered_words.append(w)
+            
+
+	BAGOFWORDS = collections.Counter(filtered_words).most_common(30)
 	
 	t1 = time()
 	
-	
-	
-	#this makes a post object 
-	
-	#f = open("Data/NewCorpus.txt", "r", encoding="utf-8")
+	#this makes a post objects
 	f = open("NewCorpus.txt", "r", encoding="utf-8")
 	line = f.readline()
 	POSTS = []
@@ -88,22 +115,62 @@ if __name__ == '__main__':
 	while line:
 		dictionary = read_post(line)
 		Titles.append(dictionary['title'])
-		
-		
-		#makes the post here and appends them into a list of posts
 		POSTS.append(post(dictionary,FrontPageIDS))
 		line = f.readline()
-		#print(dictionary['title'][:50])
+		
+	f.close()
 	
-	print("done in %0.3fs" % (time() - t1))
 	
 	#getting weights for the titles
 	vectorizer = TfidfVectorizer(min_df=1)
 	Title_matrix = vectorizer.fit_transform(Titles)
 	
-	for i in range(len(POSTS)):
-		Score = float(sum(Title_matrix.sum(1)[i]))
-		POSTS[i].title_feature_score(Score)
-	print('full posts')
+	LINE1 = ['TFID_VALUE']
+	for i in range(len(FEATURES)):
+		LINE1.append(FEATURES[i][0])
+	LINE1.append('OTHER')
 	
-	f.close()
+	for i in range(len(BAGOFWORDS)):
+		LINE1.append(BAGOFWORDS[i][0])
+	LINE1.append('MADE FRONTPAGE')
+	
+	print("NOW CSV in %0.3fs" % (time() - t0))
+	print(len(POSTS))
+	
+	with open('data.csv', 'w') as csvfile:
+		spamwriter = csv.writer(csvfile, delimiter=',')
+		spamwriter.writerow(LINE1)
+		for i in range(len(POSTS)):
+			OUTPUT = []
+			Score = float(sum(Title_matrix.sum(1)[i]))
+			OUTPUT.append(Score)
+		
+			c = 1
+		#	POSTS[i].title_feature_score(Score)
+			for j in range(len(FEATURES)):
+				if (POSTS[i].subreddit == FEATURES[j][0]):
+					c = 0
+					OUTPUT.append(1)
+					#print(POSTS[i].subreddit)
+				else:
+					OUTPUT.append(0)
+			OUTPUT.append(c)
+			for j in range(len(BAGOFWORDS)):
+				if(BAGOFWORDS[j][0] in POSTS[i].title):
+					OUTPUT.append(1)
+				else:
+					OUTPUT.append(0)
+			OUTPUT.append(POSTS[i].front_page)
+			if(POSTS[i].front_page == 1):
+				print(i)
+			spamwriter.writerow(OUTPUT)
+			
+			
+			
+	
+		
+		
+	print('full posts')
+	print("done in %0.3fs" % (time() - t1))
+	
+	
