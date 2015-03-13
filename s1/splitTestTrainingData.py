@@ -5,6 +5,7 @@ Created on Mon Mar  9 13:18:31 2015
 @author: Jeremy
 """
 import csv
+import numpy as np
 
 def splitTestTrainingData(file, trainingPercentage):
     postData = []
@@ -24,15 +25,19 @@ def formatForBernoulli(file, trainingPercentage):
     formatTestData = []
     frontPageSuccess = []
     for i in trainingData:
-        formatTrainingData.append(i[1:-2])
+        tempList = []
+        for entry in i[1:-2]:
+            tempList.append(int(entry))
+        formatTrainingData.append(tempList)
         frontPageSuccess.append(i[-2])
     for i in testData:
-        formatTestData.append(i[1:-2])
+        tempList = []
+        for entry in i[1:-2]:
+            tempList.append(int(entry))
+        formatTestData.append(tempList)
         
-    return formatTrainingData, formatTestData, frontPageSuccess
-    
-    
-        
+    return np.array(formatTrainingData), np.array(formatTestData), np.array(frontPageSuccess)
+      
     
 if __name__ == "__main__":
     fileName = "C:\\Users\\Jeremy\\Documents\\CS 175\\sample.csv"
