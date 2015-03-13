@@ -30,13 +30,13 @@ def formatForBernoulli(file, trainingPercentage):
         for entry in i[1:-2]:
             tempList.append(int(entry))
         formatTrainingData.append(tempList)
-        frontPageSuccess.append(i[-2])
+        frontPageSuccess.append(int(i[-2]))
     for i in testData:
         tempList = []
         for entry in i[1:-2]:
             tempList.append(int(entry))
         formatTestData.append(tempList)
-        testSuccess.append(i[-2])
+        testSuccess.append(int(i[-2]))
         
     return np.array(formatTrainingData), np.array(formatTestData), np.array(frontPageSuccess), np.array(testSuccess)
       
