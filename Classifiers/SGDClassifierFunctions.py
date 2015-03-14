@@ -7,32 +7,32 @@ Created on Mon Mar  2 16:54:06 2015
 
 from sklearn.metrics import mean_squared_error
 
-from sklearn.naive_bayes import BernoulliNB
+from sklearn.linear_model import SGDClassifier
 import splitTestTrainingData
 
 
 #Takes the training data as a list of lists, the classes for each list, and the values to be predicted,
 #   and returns the predictions.
-def bernNBClassifier(trainingVectors, targetValues):
+def createSGDClassifier(trainingVectors, targetValues):
     
-    clf = BernoulliNB()    
-    clf.fit(trainingVectors, targetValues, targetValues*10000)
+    clf  = SGDClassifier(loss='hinge', penalty='l2', alpha=0.0001, l1_ratio=0.15, fit_intercept=True, n_iter=5, shuffle=False, verbose=0, epsilon=0.1, n_jobs=1, random_state=None, learning_rate='optimal', eta0=0.0, power_t=0.5, class_weight=None, warm_start=False)    
+    clf.fit(trainingVectors, targetValues)
     
     return(clf)
 
 
 #output function to output the accuracy percentage, and the predictions for the test data
 def outputPredictions(predictions, accuracy):
-    outfile = open("C:\\Users\\Jeremy\\Documents\\CS 175\\predictionsBernoulli.csv", 'w')
+    outfile = open("C:\\Users\\Jeremy\\Documents\\CS 175\\predictionsSGD.csv", 'w')
     outfile.write(str(accuracy) + "\n")
     for i in predictions:
         outfile.write(str(i) + "\n")
     outfile.close()
 
-#Takes a file path as a string, runs Bernoulli Naive Bayes classifier on the data.
-def runBernoulliNBClassifier(filename):
+#Takes a file path as a string, runs SGD classifier on the data.
+def runSGDClassifier(filename):
     trainingData, testData, frontPage, testFrontPage = splitTestTrainingData.formatForBernoulli(fileName, .75)
-    clf = bernNBClassifier(trainingData, frontPage)
+    clf = createSGDClassifier(trainingData, frontPage)
     predictions = clf.predict(testData)
     
     print("MSE: ")
@@ -77,4 +77,4 @@ def runBernoulliNBClassifier(filename):
 if __name__ == "__main__":
         
     fileName = "C:\\Users\\Jeremy\\Documents\\CS 175\\NEWdataBETTERdataUSEthis.csv"
-    print(runBernoulliNBClassifier(fileName))
+    print(runSGDClassifier(fileName))

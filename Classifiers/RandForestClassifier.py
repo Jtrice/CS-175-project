@@ -6,16 +6,15 @@ Created on Mon Mar  2 16:54:06 2015
 """
 
 from sklearn.metrics import mean_squared_error
-
-from sklearn.naive_bayes import BernoulliNB
+from sklearn.ensemble import RandomForestClassifier
 import splitTestTrainingData
 
 
 #Takes the training data as a list of lists, the classes for each list, and the values to be predicted,
 #   and returns the predictions.
-def bernNBClassifier(trainingVectors, targetValues):
+def RandForestClassifier(trainingVectors, targetValues):
     
-    clf = BernoulliNB()    
+    clf = RandomForestClassifier(n_estimators=10, criterion='gini', max_depth=None, min_samples_split=1, min_samples_leaf=1, max_features='auto', max_leaf_nodes=None, bootstrap=True, oob_score=False, n_jobs=1, random_state=None, verbose=0, min_density=None, compute_importances=None)
     clf.fit(trainingVectors, targetValues, targetValues*10000)
     
     return(clf)
@@ -23,16 +22,16 @@ def bernNBClassifier(trainingVectors, targetValues):
 
 #output function to output the accuracy percentage, and the predictions for the test data
 def outputPredictions(predictions, accuracy):
-    outfile = open("C:\\Users\\Jeremy\\Documents\\CS 175\\predictionsBernoulli.csv", 'w')
+    outfile = open("C:\\Users\\Jeremy\\Documents\\CS 175\\predictionsRandomForest.csv", 'w')
     outfile.write(str(accuracy) + "\n")
     for i in predictions:
         outfile.write(str(i) + "\n")
     outfile.close()
 
 #Takes a file path as a string, runs Bernoulli Naive Bayes classifier on the data.
-def runBernoulliNBClassifier(filename):
+def runRandForestClassifier(filename):
     trainingData, testData, frontPage, testFrontPage = splitTestTrainingData.formatForBernoulli(fileName, .75)
-    clf = bernNBClassifier(trainingData, frontPage)
+    clf = RandForestClassifier(trainingData, frontPage)
     predictions = clf.predict(testData)
     
     print("MSE: ")
@@ -77,4 +76,4 @@ def runBernoulliNBClassifier(filename):
 if __name__ == "__main__":
         
     fileName = "C:\\Users\\Jeremy\\Documents\\CS 175\\NEWdataBETTERdataUSEthis.csv"
-    print(runBernoulliNBClassifier(fileName))
+    print(runRandForestClassifier(fileName))
