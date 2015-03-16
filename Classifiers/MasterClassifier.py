@@ -18,7 +18,7 @@ import splitTestTrainingData
 #################################################################################################################################################
 
 # INITIALIZING CLASSIFIERS
-# Each classifier takes training data and a vector representing the class information, initializes the classifier, and fits the data
+# Each classifier takes training data and a vector representing the class information, initializes the classifier, fits the data, and returns the classifier
 def createAdaBoostClassifier(trainingVectors, targetValues):
     
 
@@ -54,43 +54,55 @@ def bernNBClassifier(trainingVectors, targetValues):
 ##############################################################################################################################################
 ##############################################################################################################################################
 
-#output function to output the accuracy percentage, and the predictions for the test data
+#output function to output the accuracy percentages and predictions for the test data
 def outputPredictions(predictions, accuracy):
-    #ToDo get program to output to separate files
-    outfile = open("C:\\Users\\Jeremy\\Documents\\CS 175\\predictionsBernoulli.csv", 'w')
-    outfile.write(str(accuracy) + "\n")
-    for i in predictions:
-        outfile.write(str(i) + "\n")
+    outfile = open("C:\\Users\\Jeremy\\Documents\\CS 175\\predictions.csv", 'w')
+    outString = ""
+    
+    # Output accuracy of each classifier at top of column
+    for i in accuracy:
+        outString += str(i) + ","
+    outfile.write(outString + "\n")
+    
+    # Output prediction of each classifier in appropriate column/row
+    for i in range(len(predictions[0])):
+        outString = ""
+        for j in predictions:
+            outString += str(j[i]) + ","
+        outfile.write(outString + "\n")
+    
     outfile.close()
 
-#Takes a file path as a string, runs Bernoulli Naive Bayes classifier on the data.
+###############################################################################################################################################
+###############################################################################################################################################
+#Takes a file path as a string, runs all classifiers on the data, and outputs all predictions and accuracy rating to .csv file.
 def runClassifier(filename):
+    # calls function to read in data, truncate non-boolean values and return data for training and testing.
     trainingData, testData, frontPage, testFrontPage = splitTestTrainingData.formatForBernoulli(fileName, .75)
     
+    # Initializing all classifiers and fiting training data.
     clf1 = createAdaBoostClassifier(trainingData, frontPage)
     clf2 = RandForestClassifier(trainingData, frontPage)
     clf3 = createSGDClassifier(trainingData, frontPage)
     clf4 = bernNBClassifier(trainingData, frontPage)
 
+    # Get all predictions from test data
     predictions = []
     predictions.append(clf1.predict(testData))
     predictions.append(clf2.predict(testData))
     predictions.append(clf3.predict(testData))
     predictions.append(clf4.predict(testData))
     
+    #ToDo: calculates mean squared error for one classifier, either needs to be used on all or removed
     print("MSE: ")
     print(mean_squared_error(testFrontPage, predictions[0]))
-    
-    #values to track the accumulated 'total' points and the 'correct' points, represented
-    #    represented by the given weights
-
-    
+        
     #weights for correctly/incorrectly guessing a post will/won't make it to the front page
     frontPageWeight = 100
     notFrontPageWeight = 1
     
     percentages = []
-    #calculates accuracy with given weights
+    #calculates accuracy with given weights, needs to be adjusted
     for j in predictions:
         correct = 0
         total = 0
@@ -112,13 +124,14 @@ def runClassifier(filename):
                 correct += notFrontPageWeight
         percentages.append(correct/total)
             
-    #returns the accuracy as a percentage    
+    #prints the accuracy as a percentage    
 #    print("How many times predicter accurately predicted a post making the front page: ")
 #    print(fcorrect/ftotal)
 #    print("Correct guesses: " + str(fcorrect))
 #    print("Total front page posts: " + str(ftotal))
-    for j in predictions:
-        outputPredictions(j, (correct/total)) 
+            
+    # Sends predictions and accuracy of classifiers to output function
+    outputPredictions(predictions, percentages) 
 
     
     
