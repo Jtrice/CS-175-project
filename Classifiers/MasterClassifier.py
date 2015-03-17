@@ -6,6 +6,7 @@ Created on Mon Mar  2 16:54:06 2015
 """
 
 from sklearn.metrics import mean_squared_error
+import numpy as np
 
 from sklearn.ensemble import AdaBoostClassifier
 from sklearn.naive_bayes import BernoulliNB
@@ -19,19 +20,19 @@ import splitTestTrainingData
 
 # INITIALIZING CLASSIFIERS
 # Each classifier takes training data and a vector representing the class information, initializes the classifier, fits the data, and returns the classifier
-def createAdaBoostClassifier(trainingVectors, targetValues):
+def createAdaBoostClassifier(trainingVectors, targetValues, weights):
     
 
     clf = AdaBoostClassifier(base_estimator=None, n_estimators=50, learning_rate=1.0, algorithm='SAMME.R', random_state=None)
-    clf.fit(trainingVectors, targetValues, targetValues*10000)
+    clf.fit(trainingVectors, targetValues, weights)
     
     return(clf)
     
     
-def RandForestClassifier(trainingVectors, targetValues):
+def RandForestClassifier(trainingVectors, targetValues, weights):
     
     clf = RandomForestClassifier(n_estimators=10, criterion='gini', max_depth=None, min_samples_split=1, min_samples_leaf=1, max_features='auto', max_leaf_nodes=None, bootstrap=True, oob_score=False, n_jobs=1, random_state=None, verbose=0, min_density=None, compute_importances=None)
-    clf.fit(trainingVectors, targetValues, targetValues*10000)
+    clf.fit(trainingVectors, targetValues, weights)
     
     return(clf)
     
@@ -44,10 +45,10 @@ def createSGDClassifier(trainingVectors, targetValues):
     return(clf)
 
     
-def bernNBClassifier(trainingVectors, targetValues):
+def bernNBClassifier(trainingVectors, targetValues, weights):
     
     clf = BernoulliNB()    
-    clf.fit(trainingVectors, targetValues, targetValues*10000)
+    clf.fit(trainingVectors, targetValues, weights)
     
     return(clf)
 
@@ -80,11 +81,20 @@ def runClassifier(filename):
     # calls function to read in data, truncate non-boolean values and return data for training and testing.
     trainingData, testData, frontPage, testFrontPage = splitTestTrainingData.formatForBernoulli(fileName, .75)
     
+    # Initialize a list holding weights for each post based on if it made the front page
+    frontPageWeighting = 100
+    weights = []
+    
+    for i in range(len(frontPage)):
+        weights.append((frontPage[i]*frontPageWeighting) + 1)
+    
+    weights = np.array(weights)    
+        
     # Initializing all classifiers and fiting training data.
-    clf1 = createAdaBoostClassifier(trainingData, frontPage)
-    clf2 = RandForestClassifier(trainingData, frontPage)
+    clf1 = createAdaBoostClassifier(trainingData, frontPage, weights)
+    clf2 = RandForestClassifier(trainingData, frontPage, weights)
     clf3 = createSGDClassifier(trainingData, frontPage)
-    clf4 = bernNBClassifier(trainingData, frontPage)
+    clf4 = bernNBClassifier(trainingData, frontPage, weights)
 
     # Get all predictions from test data
     predictions = []
