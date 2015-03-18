@@ -5,7 +5,7 @@ Created on Mon Mar  2 16:54:06 2015
 @author: Jeremy
 """
 
-from sklearn.metrics import mean_squared_error
+#from sklearn.metrics import mean_squared_error
 import numpy as np
 
 from sklearn.ensemble import AdaBoostClassifier
@@ -57,7 +57,7 @@ def bernNBClassifier(trainingVectors, targetValues, weights):
 
 #output function to output the accuracy percentages and predictions for the test data
 def outputPredictions(predictions, accuracy):
-    outfile = open("C:\\Users\\Jeremy\\Documents\\CS 175\\predictions.csv", 'w')
+    outfile = open("C:\\Users\\Jeremy\\Documents\\CS 175\\predictionsJeremy.csv", 'w')
     outString = ""
     
     # Output accuracy of each classifier at top of column
@@ -85,10 +85,14 @@ def accuracyOfPredictions(predictions, frontPage):
     percentages = []
     #calculates accuracy with given weights, needs to be adjusted
     for j in predictions:
+        #ToDo: calculates mean squared error for one classifier, either needs to be used on all or removed
+        #print("MSE: ")
+        #percentages.append(1-(mean_squared_error(frontPage, j)))
         correct = 0
         total = 0
     
         fcorrect = 0
+        fincorrect = 0
         ftotal = 0
         for i in range(len(j)):
             if(frontPage[i] == 1):
@@ -99,11 +103,14 @@ def accuracyOfPredictions(predictions, frontPage):
                 
             else:
                 total += notFrontPageWeight
+            if(j[i] == 1 and frontPage[i] == 0):
+                fincorrect += 1
             if((j[i] == frontPage[i]) and (j[i] == 1)):
                 correct += frontPageWeight
             elif((j[i] == frontPage[i]) and (j[i] == 0)):
                 correct += notFrontPageWeight
-        percentages.append(correct/total)
+        print(str(fincorrect))
+        percentages.append(fcorrect/ftotal)
     return percentages
 
 
@@ -116,7 +123,7 @@ def runClassifier(filename):
     trainingData, testData, frontPage, testFrontPage = splitTestTrainingData.formatForBernoulli(fileName, .75)
     
     # Initialize a list holding weights for each post based on if it made the front page
-    frontPageWeighting = 100
+    frontPageWeighting = 10
     weights = []
     
     for i in range(len(frontPage)):
@@ -137,11 +144,6 @@ def runClassifier(filename):
     predictions.append(clf3.predict(testData))
     predictions.append(clf4.predict(testData))
     
-    #ToDo: calculates mean squared error for one classifier, either needs to be used on all or removed
-    print("MSE: ")
-    print(mean_squared_error(testFrontPage, predictions[0]))
-        
-            
     # Sends predictions and accuracy of classifiers to output function
     outputPredictions(predictions, accuracyOfPredictions(predictions, testFrontPage)) 
 
