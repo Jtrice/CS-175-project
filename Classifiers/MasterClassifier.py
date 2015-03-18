@@ -76,6 +76,40 @@ def outputPredictions(predictions, accuracy):
 
 ###############################################################################################################################################
 ###############################################################################################################################################
+
+def accuracyOfPredictions(predictions, frontPage):
+    #weights for correctly/incorrectly guessing a post will/won't make it to the front page
+    frontPageWeight = 100
+    notFrontPageWeight = 1
+    
+    percentages = []
+    #calculates accuracy with given weights, needs to be adjusted
+    for j in predictions:
+        correct = 0
+        total = 0
+    
+        fcorrect = 0
+        ftotal = 0
+        for i in range(len(j)):
+            if(frontPage[i] == 1):
+                total += frontPageWeight
+                ftotal += 1
+                if(j[i] == frontPage[i]):
+                    fcorrect += 1
+                
+            else:
+                total += notFrontPageWeight
+            if((j[i] == frontPage[i]) and (j[i] == 1)):
+                correct += frontPageWeight
+            elif((j[i] == frontPage[i]) and (j[i] == 0)):
+                correct += notFrontPageWeight
+        percentages.append(correct/total)
+    return percentages
+
+
+
+###############################################################################################################################################
+###############################################################################################################################################
 #Takes a file path as a string, runs all classifiers on the data, and outputs all predictions and accuracy rating to .csv file.
 def runClassifier(filename):
     # calls function to read in data, truncate non-boolean values and return data for training and testing.
@@ -107,41 +141,9 @@ def runClassifier(filename):
     print("MSE: ")
     print(mean_squared_error(testFrontPage, predictions[0]))
         
-    #weights for correctly/incorrectly guessing a post will/won't make it to the front page
-    frontPageWeight = 100
-    notFrontPageWeight = 1
-    
-    percentages = []
-    #calculates accuracy with given weights, needs to be adjusted
-    for j in predictions:
-        correct = 0
-        total = 0
-    
-        fcorrect = 0
-        ftotal = 0
-        for i in range(len(j)):
-            if(testFrontPage[i] == 1):
-                total += frontPageWeight
-                ftotal += 1
-                if(j[i] == testFrontPage[i]):
-                    fcorrect += 1
-                
-            else:
-                total += notFrontPageWeight
-            if((j[i] == testFrontPage[i]) and (j[i] == 1)):
-                correct += frontPageWeight
-            elif((j[i] == testFrontPage[i]) and (j[i] == 0)):
-                correct += notFrontPageWeight
-        percentages.append(correct/total)
-            
-    #prints the accuracy as a percentage    
-#    print("How many times predicter accurately predicted a post making the front page: ")
-#    print(fcorrect/ftotal)
-#    print("Correct guesses: " + str(fcorrect))
-#    print("Total front page posts: " + str(ftotal))
             
     # Sends predictions and accuracy of classifiers to output function
-    outputPredictions(predictions, percentages) 
+    outputPredictions(predictions, accuracyOfPredictions(predictions, testFrontPage)) 
 
     
     
