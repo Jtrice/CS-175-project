@@ -12,7 +12,7 @@ def read_post(line):
     for k,v in ast.literal_eval(line).items():
         #Reverts the data damage
         if type(k) is str: k = k.replace('$q*',"'").replace('$b*','\\')
-        if type(v) is str: v = v.replace('$q*',"'").replace('$b*'.'\\')
+        if type(v) is str: v = v.replace('$q*',"'").replace('$b*','\\')
         dict[k] = v
     return dict
     
