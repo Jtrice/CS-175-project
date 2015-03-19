@@ -12,6 +12,7 @@ from sklearn.ensemble import AdaBoostClassifier
 from sklearn.naive_bayes import BernoulliNB
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import SGDClassifier
+from sklearn.neural_network import BernoulliRBM
 
 import splitTestTrainingData
 
@@ -22,7 +23,6 @@ import splitTestTrainingData
 # Each classifier takes training data and a vector representing the class information, initializes the classifier, fits the data, and returns the classifier
 def createAdaBoostClassifier(trainingVectors, targetValues, weights):
     
-
     clf = AdaBoostClassifier(base_estimator=None, n_estimators=50, learning_rate=1.0, algorithm='SAMME.R', random_state=None)
     clf.fit(trainingVectors, targetValues, weights)
     
@@ -39,7 +39,7 @@ def RandForestClassifier(trainingVectors, targetValues, weights):
     
 def createSGDClassifier(trainingVectors, targetValues):
     
-    clf  = SGDClassifier(loss='hinge', penalty='l2', alpha=0.0001, l1_ratio=0.15, fit_intercept=True, n_iter=5, shuffle=False, verbose=0, epsilon=0.1, n_jobs=1, random_state=None, learning_rate='optimal', eta0=0.0, power_t=0.5, class_weight=None, warm_start=False)    
+    clf  = SGDClassifier(loss='perceptron', penalty='l2', alpha=0.0001, l1_ratio=0.15, fit_intercept=True, n_iter=5, shuffle=False, verbose=0, epsilon=0.1, n_jobs=1, random_state=None, learning_rate='optimal', eta0=0.0, power_t=0.5, class_weight='auto', warm_start=False)    
     clf.fit(trainingVectors, targetValues)
     
     return(clf)
@@ -52,12 +52,21 @@ def bernNBClassifier(trainingVectors, targetValues, weights):
     
     return(clf)
 
+def createBernoulliRBM(trainingVectors, targetValues):
+
+    clf = BernoulliRBM(n_components=256, learning_rate=0.1, batch_size=10, n_iter=10, verbose=0, random_state=None)
+    clf.fit(trainingVectors,targetValues)
+
+    return clf
+
 ##############################################################################################################################################
 ##############################################################################################################################################
 
 #output function to output the accuracy percentages and predictions for the test data
 def outputPredictions(predictions, accuracy):
-    outfile = open("C:\\Users\\Jeremy\\Documents\\CS 175\\predictionsJeremy.csv", 'w')
+    #outfile = open("C:\\Users\\Jeremy\\Documents\\CS 175\\predictionsJeremy.csv", 'w')
+    outfile = open("/Users/taylorrogers/Desktop/175/Data/predictions.csv","w")
+    #outfile = open("C:\\Users\\Jeremy\\Documents\\CS 175\\predictions.csv", 'w')
     outString = ""
     
     # Output accuracy of each classifier at top of column
@@ -136,12 +145,14 @@ def runClassifier(filename):
     clf2 = RandForestClassifier(trainingData, frontPage, weights)
     clf3 = createSGDClassifier(trainingData, frontPage)
     clf4 = bernNBClassifier(trainingData, frontPage, weights)
+    clf5 = createBernoulliRBM(trainingData, frontPage)
 
     # Get all predictions from test data
     predictions = []
     predictions.append(clf1.predict(testData))
     predictions.append(clf2.predict(testData))
     predictions.append(clf3.predict(testData))
+    predictions.append(clf4.predict(testData))
     predictions.append(clf4.predict(testData))
     
     # Sends predictions and accuracy of classifiers to output function
@@ -150,6 +161,6 @@ def runClassifier(filename):
     
     
 if __name__ == "__main__":
-        
-    fileName = "C:\\Users\\Jeremy\\Documents\\CS 175\\NEWdataBETTERdataUSEthis.csv"
+    fileName = "/Users/taylorrogers/Desktop/175/Data/NEWdataBETTERdataUSEthis.csv"        
+    #fileName = "C:\\Users\\Jeremy\\Documents\\CS 175\\NEWdataBETTERdataUSEthis.csv"
     runClassifier(fileName)
