@@ -39,7 +39,7 @@ def RandForestClassifier(trainingVectors, targetValues, weights):
     
 def createSGDClassifier(trainingVectors, targetValues):
     
-    clf  = SGDClassifier(loss='perceptron', penalty='l2', alpha=0.0001, l1_ratio=0.15, fit_intercept=True, n_iter=5, shuffle=False, verbose=0, epsilon=0.1, n_jobs=1, random_state=None, learning_rate='optimal', eta0=0.0, power_t=0.5, class_weight='auto', warm_start=False)    
+    clf  = SGDClassifier(loss='hinge', penalty='l2', alpha=0.0001, l1_ratio=0.15, fit_intercept=True, n_iter=5, shuffle=False, verbose=0, epsilon=0.1, n_jobs=1, random_state=None, learning_rate='optimal', eta0=0.0, power_t=0.5, class_weight=None)    
     clf.fit(trainingVectors, targetValues)
     
     return(clf)
@@ -64,13 +64,10 @@ def createBernoulliRBM(trainingVectors, targetValues):
 
 #output function to output the accuracy percentages and predictions for the test data
 def outputPredictions(predictions, accuracy):
-<<<<<<< HEAD
+
     outfile = open("C:\\Users\\Jeremy\\Documents\\CS 175\\predictionsALLJeremy.csv", 'w')
-=======
-    #outfile = open("C:\\Users\\Jeremy\\Documents\\CS 175\\predictionsJeremy.csv", 'w')
-    outfile = open("/Users/taylorrogers/Desktop/175/Data/predictions.csv","w")
-    #outfile = open("C:\\Users\\Jeremy\\Documents\\CS 175\\predictions.csv", 'w')
->>>>>>> origin/master
+    #outfile = open("/Users/taylorrogers/Desktop/175/Data/predictions.csv","w")
+
     outString = ""
     
     # Output accuracy of each classifier at top of column
@@ -156,7 +153,7 @@ def runClassifier(filename):
     predictions.append(clf2.predict(testData))
     predictions.append(clf3.predict(testData))
     predictions.append(clf4.predict(testData))
-    predictions.append(clf4.predict(testData))
+    #predictions.append(clf5.predict(testData))
     
     # Combines all data into one list, and runs predictions on it.
     predictionsALL = []
@@ -168,6 +165,7 @@ def runClassifier(filename):
     predictionsALL.append(clf2.predict(allData))
     predictionsALL.append(clf3.predict(allData))
     predictionsALL.append(clf4.predict(allData))
+    #predictionsALL.append(clf5.predict(allData))
     
     # Sends predictions and accuracy of classifiers to output function
     outputPredictions(predictionsALL, accuracyOfPredictions(predictions, testFrontPage)) 
@@ -176,6 +174,6 @@ def runClassifier(filename):
 ##################################################################################################################################################
     
 if __name__ == "__main__":
-    fileName = "/Users/taylorrogers/Desktop/175/Data/NEWdataBETTERdataUSEthis.csv"        
-    #fileName = "C:\\Users\\Jeremy\\Documents\\CS 175\\NEWdataBETTERdataUSEthis.csv"
+    #fileName = "/Users/taylorrogers/Desktop/175/Data/NEWdataBETTERdataUSEthis.csv"        
+    fileName = "C:\\Users\\Jeremy\\Documents\\CS 175\\NEWdataBETTERdataUSEthis.csv"
     runClassifier(fileName)
