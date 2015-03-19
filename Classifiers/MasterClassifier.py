@@ -57,7 +57,7 @@ def bernNBClassifier(trainingVectors, targetValues, weights):
 
 #output function to output the accuracy percentages and predictions for the test data
 def outputPredictions(predictions, accuracy):
-    outfile = open("C:\\Users\\Jeremy\\Documents\\CS 175\\predictionsJeremy.csv", 'w')
+    outfile = open("C:\\Users\\Jeremy\\Documents\\CS 175\\predictionsALLJeremy.csv", 'w')
     outString = ""
     
     # Output accuracy of each classifier at top of column
@@ -109,7 +109,6 @@ def accuracyOfPredictions(predictions, frontPage):
                 correct += frontPageWeight
             elif((j[i] == frontPage[i]) and (j[i] == 0)):
                 correct += notFrontPageWeight
-        print(str(fincorrect))
         percentages.append(fcorrect/ftotal)
     return percentages
 
@@ -144,10 +143,22 @@ def runClassifier(filename):
     predictions.append(clf3.predict(testData))
     predictions.append(clf4.predict(testData))
     
-    # Sends predictions and accuracy of classifiers to output function
-    outputPredictions(predictions, accuracyOfPredictions(predictions, testFrontPage)) 
-
+    # Combines all data into one list, and runs predictions on it.
+    predictionsALL = []
+    allData = []
+    allData.extend(trainingData)
+    allData.extend(testData)
     
+    predictionsALL.append(clf1.predict(allData))
+    predictionsALL.append(clf2.predict(allData))
+    predictionsALL.append(clf3.predict(allData))
+    predictionsALL.append(clf4.predict(allData))
+    
+    # Sends predictions and accuracy of classifiers to output function
+    outputPredictions(predictionsALL, accuracyOfPredictions(predictions, testFrontPage)) 
+
+##################################################################################################################################################
+##################################################################################################################################################
     
 if __name__ == "__main__":
         
